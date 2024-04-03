@@ -31,21 +31,21 @@ module.exports = {
         let number = args.getNumber('nombre')
         if (parseInt(number) < 1 || parseInt(number) > 100) return message.reply('Le nombre doit être compris entre 1 et 100 !')
 
-        await message.deferReply()
-
-        try {
-            let messages = await channel.bulkDelete(parseInt(number))
-
-            await message.followUp({content: `J'ai bien supprimé \`${messages.size}\` messages !`, ephemeral: true })
-
-        } catch (err) {
-            let messages = [...(await channel.messages.fetch()).filter(msg => !msg.interaction && (Date.now() - msg.createdAt) <= 1209600000).values()]
-            if (messages.length <= 0) return message.followUp('Aucun message à supprimer car ils datent de + de 14 jours !')
-            await channel.bulkDelete(messages)
-
-            await message.followUp({ content: `J'ai pu supprimé uniquement \`${messages.length}\` messages car les autres dataient de + de 14 jours !`, ephemeral: true })
-        }
-
+        await channel.bulkDelete(number, true).then(async messages => {
+            let embed = {
+                color: 0x9933ff,
+                title: 'Suppression de messages',
+                description: `**${messages.size}** messages ont été supprimés avec succès !`
+            }
+            await message.reply({ embeds: [embed] })
+        }).catch(async error => {
+            let embed = {
+                color: 0x9933ff,
+                title: 'Suppression de messages',
+                description: `Une erreur est survenue lors de la suppression des messages : ${error}`
+            }
+            await message.reply({ embeds: [embed] })
+        })
 
     }
 }

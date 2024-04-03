@@ -6,20 +6,18 @@ module.exports = {
     permission: 'Aucune',
     dm: false,
     options: [],
-    async run(bot, message) {
-
-        const embed = {
-            color: 0x9933ff, // Couleur violette
+    run: async (bot, message) => {
+        var embed = {
+            color: 0x0099ff,
             title: 'Liste des commandes',
-            description: 'Voici la liste des commandes disponibles !',
-            fields: [
-                {
-                    name: 'Commandes',
-                    value: '`/help` : Affiche la liste des commandes\n`/ping` : Affiche la latence\n`/reseaux` : Affiche les réseaux sociaux\n`/clear` : Supprime un nombre de messages',
-                }]
-        }
-
-        await message.reply({ embeds: [embed] })
-
+            description: `**Voici la liste des commandes disponibles :**`,
+            timestamp: new Date(),
+        };
+        bot.commands.forEach(command => {
+            var name = command.name;
+            var description = command.description;
+            embed.description += "\n**/" + name + "** : ``" + description + "``";
+        })
+        message.reply({ embeds: [embed] })
     }
 }
